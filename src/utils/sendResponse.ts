@@ -1,6 +1,6 @@
 import type { Response } from "express";
 
-const sendResaponse = <T>(res: Response, {
+const sendResponse = <T>(res: Response, {
     status,
     success,
     message,
@@ -20,4 +20,4 @@ const sendResaponse = <T>(res: Response, {
 
 }
 
-export default sendResaponse;
+export default sendResponse;

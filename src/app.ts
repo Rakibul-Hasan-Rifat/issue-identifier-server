@@ -2,12 +2,14 @@ import express, { type Request, type Response } from "express";
 import env_variables from "./config/env_variables";
 import authRoute from "./modules/auth/auth.router";
 import globalError from "./utils/globalError";
+import issueRoute from "./modules/issue/issue.router";
 
 const app = express();
 
 // middlewares
 app.use(express.json())
 app.use("/api/auth", authRoute)
+app.use("/api/issues", issueRoute)
 
 app.get("/", (req:Request, res: Response) => {
     res.json({
