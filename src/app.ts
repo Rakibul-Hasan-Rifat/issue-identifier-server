@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from "express";
 import env_variables from "./config/env_variables";
 import authRoute from "./modules/auth/auth.router";
+import globalError from "./utils/globalError";
 
 const app = express();
 
@@ -16,5 +17,7 @@ app.get("/", (req:Request, res: Response) => {
         port: env_variables.port
     })
 })
+
+app.use(globalError)
 
 export default app;

@@ -13,6 +13,20 @@ class AuthControllers {
             data: result
         })
     }
+
+    async login(req: Request, res: Response) {
+        const {accessToken, user} = await authService.login(req.body)
+
+        sendResaponse(res, {
+            status: 200,
+            success: true,
+            message: "Login successful",
+            data: {
+                token: accessToken,
+                user
+            }
+        })
+    }
 }
 
 export default new AuthControllers();

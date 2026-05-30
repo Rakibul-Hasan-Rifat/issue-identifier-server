@@ -3,7 +3,12 @@ export default interface IUser {
     name: string;
     email: string;
     password: string;
-    role?: "contributor" | "maintainer";
+    role?: typeof Role;
     created_at?: Date;
     updated_at?: Date;
 }
+
+export const Role = {
+    contributor: "CONTRIBUTOR",
+    maintainer: "MAINTAINER"
+} as const
