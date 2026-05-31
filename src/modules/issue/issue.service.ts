@@ -136,7 +136,7 @@ class IssueService {
         }
     }
 
-    async deleteIssue(issueId: number, user: Pick<IUser, "id" | "name" | "email" | "role">) {
+    async deleteIssue(issueId: number, user: IUser) {
         try {
             if (user.role?.toUpperCase() !== Role.maintainer) {
                 const err: Error & { status?: number } = new Error("You're forbidden to delete an issue");

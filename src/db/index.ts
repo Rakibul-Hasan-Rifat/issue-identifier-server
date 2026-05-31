@@ -2,7 +2,8 @@ import { Pool } from "pg";
 import env_variables from "../config/env_variables";
 
 const pool = new Pool({
-    connectionString: env_variables.db_url
+    connectionString: env_variables.db_url,
+    ssl: { rejectUnauthorized: false }
 })
 
 export const initDb = async () => {

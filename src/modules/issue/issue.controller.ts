@@ -1,11 +1,12 @@
 import type { Request, Response } from "express";
 import issueService from "./issue.service";
 import sendResponse from "../../utils/sendResponse";
+import type IUser from "../auth/auth.interface";
 
 class IssueController {
     async createIssue(req: Request, res: Response) {
         try {
-            const result = await issueService.createIssue(req.user, req.body)
+            const result = await issueService.createIssue(req.user as IUser, req.body)
 
             sendResponse(res, {
                 status: 201,
@@ -42,7 +43,7 @@ class IssueController {
     }
 
     async updateIssue(req: Request, res: Response) {
-        const result = await issueService.updateIssue(Number(req.params.id), req.user, req.body)
+        const result = await issueService.updateIssue(Number(req.params.id), req.user as IUser, req.body)
 
         sendResponse(res, {
             status: 200,
@@ -53,7 +54,7 @@ class IssueController {
     }
 
     async deleteIssue(req: Request, res: Response) {
-        const result = await issueService.deleteIssue(Number(req.params.id), req.user)
+        const result = await issueService.deleteIssue(Number(req.params.id), req.user as IUser)
 
         sendResponse(res, {
             status: 200,

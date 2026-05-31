@@ -60,7 +60,7 @@ class AuthService {
                 id: isUserAvailable.id as number, 
                 name: isUserAvailable.name as string, 
                 email: isUserAvailable.email as string, 
-                role: isUserAvailable.role as typeof Role
+                role: isUserAvailable.role as Role
             }, env_variables.jwt_access_token as string)
 
             delete isUserAvailable.password
