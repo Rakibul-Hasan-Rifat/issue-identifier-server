@@ -15,7 +15,7 @@ class IssueController {
             })
         } catch (error) {
             console.log(error);
-            throw error;            
+            throw error;
         }
     }
 
@@ -37,6 +37,28 @@ class IssueController {
             status: 200,
             success: true,
             message: "Issue retrived successfully",
+            data: result
+        })
+    }
+
+    async updateIssue(req: Request, res: Response) {
+        const result = await issueService.updateIssue(Number(req.params.id), req.body)
+
+        sendResponse(res, {
+            status: 200,
+            success: true,
+            message: "Issue updated successfully",
+            data: result
+        })
+    }
+
+    async deleteIssue(req: Request, res: Response) {
+        const result = await issueService.deleteIssue(Number(req.params.id))
+
+        sendResponse(res, {
+            status: 200,
+            success: true,
+            message: "Issue deleted successfully",
             data: result
         })
     }
