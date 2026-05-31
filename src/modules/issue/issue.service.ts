@@ -1,4 +1,3 @@
-import type { JwtPayload } from "jsonwebtoken";
 import pool from "../../db";
 import type IUser from "../auth/auth.interface";
 import type IIssue from "./issue.interface";
@@ -33,7 +32,26 @@ class IssueService {
                 `
             )
 
-            return result.rows
+            const issues = result.rows;
+            const issueReporterIds = issues.map(issue => issue.reporter_id);            
+
+            const reporters = await pool.query(
+                `
+                    SELECT id, name, email, role FROM users WHERE id = ANY($1)
+                `,
+                [issueReporterIds]
+            );        
+
+            issues.forEach(issue => {
+                reporters.rows.forEach(reporter => {
+                    if (issue.reporter_id === reporter.id) {
+                        issue.reporter = reporter;
+                    }
+                })
+                delete issue.reporter_id;
+            })
+
+            return issues
         } catch (error) {
             console.log(error);
             throw error
@@ -49,7 +67,18 @@ class IssueService {
                 [issueId]
             )
 
-            return result.rows[0]
+            const issue = result.rows[0];
+            const reporter = await pool.query(
+                `
+                    SELECT id, name, email, role FROM users WHERE id = $1
+                `,
+                [issue.reporter_id]
+            )
+
+            issue.reporter = reporter.rows[0];
+            delete issue.reporter_id
+
+            return issue
         } catch (error) {
             console.log(error);
             throw error;
@@ -114,7 +143,7 @@ class IssueService {
                 err.status = 403;
                 throw err;
             }
-            
+
             const result = await pool.query(
                 `
                     DELETE FROM issues WHERE id = $1
