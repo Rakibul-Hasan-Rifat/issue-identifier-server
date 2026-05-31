@@ -5,7 +5,7 @@ import sendResponse from "../../utils/sendResponse";
 class IssueController {
     async createIssue(req: Request, res: Response) {
         try {
-            const result = await issueService.createIssue(req.body)
+            const result = await issueService.createIssue(req.user, req.body)
 
             sendResponse(res, {
                 status: 201,
@@ -42,7 +42,7 @@ class IssueController {
     }
 
     async updateIssue(req: Request, res: Response) {
-        const result = await issueService.updateIssue(Number(req.params.id), req.body)
+        const result = await issueService.updateIssue(Number(req.params.id), req.user, req.body)
 
         sendResponse(res, {
             status: 200,
@@ -53,7 +53,7 @@ class IssueController {
     }
 
     async deleteIssue(req: Request, res: Response) {
-        const result = await issueService.deleteIssue(Number(req.params.id))
+        const result = await issueService.deleteIssue(Number(req.params.id), req.user)
 
         sendResponse(res, {
             status: 200,

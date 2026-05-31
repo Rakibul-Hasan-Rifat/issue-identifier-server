@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import env_variables from "../config/env_variables";
 import type IUser from "../modules/auth/auth.interface";
 
 export const createToken = (payload: Pick<IUser, "id" | "name" | "email" | "role">, secretKey: string) => {

@@ -1,17 +1,21 @@
+import type { JwtPayload } from "jsonwebtoken";
 import pool from "../../db";
+import type IUser from "../auth/auth.interface";
 import type IIssue from "./issue.interface";
+import { Role } from "../auth/auth.interface";
 
 class IssueService {
-    async createIssue(payload: IIssue) {
+    async createIssue(user: Pick<IUser, "id" | "name" | "email" | "role">, payload: IIssue) {
         const { title, description, type } = payload;
+        console.log(user);
         try {
             const result = await pool.query(
                 `
-                    INSERT INTO issues (title, description, type)
-                    VALUES ($1, $2, $3)
+                    INSERT INTO issues (title, description, type, reporter_id)
+                    VALUES ($1, $2, $3, $4)
                     RETURNING *
                 `,
-                [title, description, type]
+                [title, description, type, user.id]
             )
             return result.rows[0]
 
@@ -52,7 +56,7 @@ class IssueService {
         }
     }
 
-    async updateIssue(issueId: number, payload: Partial<Pick<IIssue, "title" | "description" | "type">>) {
+    async updateIssue(issueId: number, user: Pick<IUser, "id" | "name" | "email" | "role">, payload: Partial<Pick<IIssue, "title" | "description" | "type">>) {
         try {
             const doesExist = await pool.query(
                 `
@@ -61,11 +65,20 @@ class IssueService {
                 [issueId]
             )
 
-            console.log(payload);            
 
             if ((doesExist.rowCount as number) < 1) {
                 const err: Error & { status?: number } = new Error("The item with id provided by you is not found!")
                 err.status = 404;
+                throw err;
+            }
+
+            if (user.role?.toUpperCase() !== Role.maintainer &&
+                !(
+                    user.role?.toUpperCase() === Role.contributor &&
+                    user.id === doesExist.rows[0].reporter_id
+                )) {
+                const err: Error & { status?: number } = new Error("You're forbidden to do this task!");
+                err.status = 403;
                 throw err;
             }
 
@@ -94,8 +107,14 @@ class IssueService {
         }
     }
 
-    async deleteIssue(issueId: number) {
+    async deleteIssue(issueId: number, user: Pick<IUser, "id" | "name" | "email" | "role">) {
         try {
+            if (user.role?.toUpperCase() !== Role.maintainer) {
+                const err: Error & { status?: number } = new Error("You're forbidden to delete an issue");
+                err.status = 403;
+                throw err;
+            }
+            
             const result = await pool.query(
                 `
                     DELETE FROM issues WHERE id = $1
