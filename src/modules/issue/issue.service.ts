@@ -33,14 +33,14 @@ class IssueService {
             )
 
             const issues = result.rows;
-            const issueReporterIds = issues.map(issue => issue.reporter_id);            
+            const issueReporterIds = issues.map(issue => issue.reporter_id);
 
             const reporters = await pool.query(
                 `
                     SELECT id, name, email, role FROM users WHERE id = ANY($1)
                 `,
                 [issueReporterIds]
-            );        
+            );
 
             issues.forEach(issue => {
                 reporters.rows.forEach(reporter => {
@@ -66,6 +66,12 @@ class IssueService {
                 `,
                 [issueId]
             )
+
+            if (result.rowCount as number < 0) {
+                const err: Error & { status?: number } = new Error(`No user found with id ${issueId}`)
+                err.status = 404;
+                throw err;
+            }
 
             const issue = result.rows[0];
             const reporter = await pool.query(
