@@ -66,7 +66,13 @@ class IssueService {
                 `,
                 [issueId]
             )
-
+                
+            if (result.rowCount as number < 0) {
+                const err: Error & { status?: number } = new Error(`No user found with id ${issueId}`)
+                err.status = 404;
+                throw err;
+            }
+            
             const issue = result.rows[0];
             const reporter = await pool.query(
                 `
