@@ -65,9 +65,9 @@ class IssueService {
                     SELECT * FROM issues WHERE id = $1
                 `,
                 [issueId]
-            )
+            )            
 
-            if (result.rowCount as number < 0) {
+            if (result.rows.length < 1) {
                 const err: Error & { status?: number } = new Error(`No user found with id ${issueId}`)
                 err.status = 404;
                 throw err;

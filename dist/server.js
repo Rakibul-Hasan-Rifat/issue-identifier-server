@@ -269,6 +269,11 @@ var IssueService = class {
                 `,
         [issueId]
       );
+      if (result.rows.length < 1) {
+        const err = new Error(`No user found with id ${issueId}`);
+        err.status = 404;
+        throw err;
+      }
       const issue = result.rows[0];
       const reporter = await db_default.query(
         `
